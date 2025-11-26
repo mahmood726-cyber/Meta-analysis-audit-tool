@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta-Analysis Audit Tool v2 | Forensic Evidence Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #111820;
+            --bg-tertiary: #1a2332;
+            --bg-card: #151d2a;
+            --text-primary: #e6edf5;
+            --text-secondary: #8b9bb4;
+            --text-muted: #5c6b7f;
+            --accent-blue: #3d8ef7;
+            --accent-cyan: #22d3ee;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #a78bfa;
+            --accent-orange: #fb923c;
+            --border-subtle: rgba(139, 155, 180, 0.15);
+            --border-active: rgba(61, 142, 247, 0.4);
+            --gradient-forensic: linear-gradient(135deg, #0a0e14 0%, #111820 50%, #1a2332 100%);
+            --shadow-glow: 0 0 40px rgba(61, 142, 247, 0.1);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            background: var(--gradient-forensic);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Header */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text span {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .header-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        /* Buttons */
+        .btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn:hover {
+            background: var(--bg-card);
+            border-color: var(--border-active);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+            border-color: var(--accent-blue);
+        }
+
+        .btn-primary:hover { box-shadow: 0 0 20px rgba(61, 142, 247, 0.3); }
+
+        .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.7rem; }
+
+        /* Main Layout */
+        main {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body { padding: 1.25rem; }
+
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+        @media (max-width: 1200px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Table Styles */
+        .data-table-container {
+            overflow-x: auto;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .data-table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table tr:hover { background: rgba(61, 142, 247, 0.05); }
+
+        .data-table input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 0.45rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .data-table input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(61, 142, 247, 0.2);
+        }
+
+        /* Input Config Row */
+        .config-row {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .config-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .config-group label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .config-group select, .config-group input[type="checkbox"] {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover { background: var(--bg-tertiary); }
+        .tab-btn.active { background: var(--accent-blue); color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Stat Boxes */
+        .stat-box {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .stat-box .number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-box .label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.4rem;
+        }
+
+        .stat-box.critical .number { color: var(--accent-red); }
+        .stat-box.warning .number { color: var(--accent-yellow); }
+        .stat-box.ok .number { color: var(--accent-green); }
+        .stat-box.info .number { color: var(--accent-blue); }
+
+        /* Comparison Stats */
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.85rem;
+        }
+
+        .stat-label { color: var(--text-secondary); }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+        .stat-value.match { color: var(--accent-green); }
+        .stat-value.minor-diff { color: var(--accent-yellow); }
+        .stat-value.major-diff { color: var(--accent-red); }
+
+        /* Published Values Input */
+        .published-section {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 1.25rem;
+        }
+
+        .published-section h4 {
+            font-size: 0.8rem;
+            color: var(--accent-purple);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .form-group label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input, .form-group select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 0.5rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        /* Forest Plot */
+        .forest-container {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .forest-svg { width: 100%; height: auto; }
+
+        /* Findings List */
+        .findings-list { list-style: none; }
+
+        .finding-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .finding-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+
+        .finding-icon.critical { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .finding-icon.warning { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+        .finding-icon.info { background: rgba(61, 142, 247, 0.2); color: var(--accent-blue); }
+        .finding-icon.ok { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+
+        .finding-content h5 { font-size: 0.85rem; margin-bottom: 0.15rem; }
+        .finding-content p { font-size: 0.8rem; color: var(--text-secondary); }
+        .finding-content code {
+            background: var(--bg-secondary);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        /* Verdict Badge */
+        .verdict-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .verdict-pass { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .verdict-warning { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+        .verdict-fail { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+
+        /* Estimator Comparison Table */
+        .estimator-table th, .estimator-table td { text-align: center; }
+        .estimator-table .match-cell { background: rgba(16, 185, 129, 0.1); }
+        .estimator-table .best-match { background: rgba(16, 185, 129, 0.25); font-weight: 600; }
+
+        /* Sample Buttons */
+        .sample-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* CSV Dropzone */
+        .csv-dropzone {
+            border: 2px dashed var(--border-subtle);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .csv-dropzone:hover, .csv-dropzone.dragover {
+            border-color: var(--accent-blue);
+            background: rgba(61, 142, 247, 0.05);
+        }
+
+        .csv-dropzone p { color: var(--text-secondary); margin-bottom: 0.25rem; }
+        .csv-dropzone span { font-size: 0.75rem; color: var(--text-muted); }
+
+        #csvFileInput { display: none; }
+
+        /* LOO Table */
+        .loo-highlight { background: rgba(239, 68, 68, 0.15); }
+
+        /* Funnel Plot */
+        .funnel-container {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        /* Estimator Pills */
+        .estimator-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .estimator-pill {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .estimator-pill.selected {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        /* Sensitivity Indicator */
+        .sensitivity-bar {
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+
+        .sensitivity-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .sensitivity-fill.low { background: var(--accent-green); }
+        .sensitivity-fill.medium { background: var(--accent-yellow); }
+        .sensitivity-fill.high { background: var(--accent-red); }
+
+        /* Collapsible Sections */
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+
+        .collapsible-header:hover { color: var(--accent-blue); }
+        .collapsible-content { display: none; padding-top: 0.5rem; }
+        .collapsible-content.open { display: block; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            border-top: 1px solid var(--border-subtle);
+            margin-top: 2rem;
+        }
+
+        /* Remove Row Button */
+        .remove-row {
+            background: none;
+            border: none;
+            color: var(--accent-red);
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            font-size: 1rem;
+        }
+
+        .remove-row:hover { opacity: 1; }
+
+        /* Hidden */
+        .hidden { display: none !important; }
+
+        /* Methodology Note */
+        .method-note {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🔬</div>
+                <div class="logo-text">
+                    <h1>Meta-Analysis Audit Tool</h1>
+                    <span>v2.0 — Multi-Estimator Forensic Verification</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn" onclick="clearAll()">↺ Reset</button>
+                <button class="btn btn-primary" onclick="runAudit()">▶ Run Full Audit</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Configuration & Input Section -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">📊 Study Data Input</div>
+            </div>
+            <div class="card-body">
+                <!-- Configuration Row -->
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>Effect Measure:</label>
+                        <select id="effectMeasure" onchange="updateInputMode()">
+                            <option value="OR">Odds Ratio (OR)</option>
+                            <option value="RR">Risk Ratio (RR)</option>
+                            <option value="HR">Hazard Ratio (HR)</option>
+                            <option value="MD">Mean Difference (MD)</option>
+                            <option value="SMD">Standardised Mean Diff (SMD)</option>
+                        </select>
+                    </div>
+                    <div class="config-group" id="scaleToggleGroup">
+                        <label>Input Scale:</label>
+                        <select id="inputScale" onchange="updateInputMode()">
+                            <option value="natural">Natural (e.g., OR=0.85)</option>
+                            <option value="log">Log (e.g., log(OR)=-0.16)</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label>CI Scale:</label>
+                        <select id="ciScale">
+                            <option value="natural">Natural</option>
+                            <option value="log">Log</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Input Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchInputTab('manual')">Manual Entry</button>
+                    <button class="tab-btn" onclick="switchInputTab('csv')">CSV Import</button>
+                    <button class="tab-btn" onclick="switchInputTab('samples')">Sample Data</button>
+                </div>
+
+                <!-- Manual Entry -->
+                <div id="tab-manual" class="tab-content active">
+                    <div class="data-table-container" style="max-height: 350px; overflow-y: auto;">
+                        <table class="data-table" id="studyTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25px;">#</th>
+                                    <th style="width: 150px;">Study</th>
+                                    <th id="effectHeader">Effect</th>
+                                    <th>SE</th>
+                                    <th>95% CI Lower</th>
+                                    <th>95% CI Upper</th>
+                                    <th>Pub. Weight (%)</th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="studyTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+                        <button class="btn btn-sm" onclick="addStudyRow()">+ Add Study</button>
+                        <button class="btn btn-sm" onclick="addMultipleRows(5)">+ Add 5 Rows</button>
+                    </div>
+                </div>
+
+                <!-- CSV Import -->
+                <div id="tab-csv" class="tab-content">
+                    <div class="csv-dropzone" id="dropzone" onclick="document.getElementById('csvFileInput').click()">
+                        <p>Drop CSV file here or click to upload</p>
+                        <span class="mono">study, effect, se, ci_lower, ci_upper, pub_weight</span>
+                    </div>
+                    <input type="file" id="csvFileInput" accept=".csv" onchange="handleCSVUpload(event)">
+                </div>
+
+                <!-- Sample Data -->
+                <div id="tab-samples" class="tab-content">
+                    <p style="color: var(--text-secondary); margin-bottom: 0.75rem; font-size: 0.85rem;">Load sample datasets demonstrating different error types:</p>
+                    <div class="sample-grid">
+                        <button class="btn btn-sm" onclick="loadSample('correct')">✓ Correct (DL)</button>
+                        <button class="btn btn-sm" onclick="loadSample('correct_reml')">✓ Correct (REML)</button>
+                        <button class="btn btn-sm" onclick="loadSample('correct_hksj')">✓ Correct (HKSJ)</button>
+                        <button class="btn btn-sm" onclick="loadSample('weight_error')">⚠ Weight Error</button>
+                        <button class="btn btn-sm" onclick="loadSample('effect_error')">⚠ Effect Transcription</button>
+                        <button class="btn btn-sm" onclick="loadSample('i2_error')">⚠ I² Miscalculation</button>
+                        <button class="btn btn-sm" onclick="loadSample('ci_narrow')">⚠ CI Too Narrow</button>
+                        <button class="btn btn-sm" onclick="loadSample('sign_flip')">⚠ Sign Flip Error</button>
+                        <button class="btn btn-sm" onclick="loadSample('excluded_study')">⚠ Undisclosed Exclusion</button>
+                    </div>
+                </div>
+
+                <!-- Published Summary Values -->
+                <div class="published-section">
+                    <h4>📄 Published Summary Statistics</h4>
+                    <div class="pub-grid">
+                        <div class="form-group">
+                            <label>Pooled Effect</label>
+                            <input type="number" step="any" id="pubEffect" placeholder="e.g., 0.85">
+                        </div>
+                        <div class="form-group">
+                            <label>95% CI Lower</label>
+                            <input type="number" step="any" id="pubCILower" placeholder="e.g., 0.72">
+                        </div>
+                        <div class="form-group">
+                            <label>95% CI Upper</label>
+                            <input type="number" step="any" id="pubCIUpper" placeholder="e.g., 1.01">
+                        </div>
+                        <div class="form-group">
+                            <label>I² (%)</label>
+                            <input type="number" step="any" id="pubI2" placeholder="e.g., 45">
+                        </div>
+                        <div class="form-group">
+                            <label>Tau²</label>
+                            <input type="number" step="any" id="pubTau2" placeholder="e.g., 0.012">
+                        </div>
+                        <div class="form-group">
+                            <label>Q Statistic</label>
+                            <input type="number" step="any" id="pubQ" placeholder="e.g., 18.2">
+                        </div>
+                        <div class="form-group">
+                            <label>P (heterogeneity)</label>
+                            <input type="number" step="any" id="pubPhet" placeholder="e.g., 0.032">
+                        </div>
+                        <div class="form-group">
+                            <label>Prediction Interval Lower</label>
+                            <input type="number" step="any" id="pubPILower" placeholder="optional">
+                        </div>
+                        <div class="form-group">
+                            <label>Prediction Interval Upper</label>
+                            <input type="number" step="any" id="pubPIUpper" placeholder="optional">
+                        </div>
+                        <div class="form-group">
+                            <label>τ² Estimator</label>
+                            <select id="pubEstimator">
+                                <option value="unknown">Unknown/Not Stated</option>
+                                <option value="DL">DerSimonian-Laird</option>
+                                <option value="REML">REML</option>
+                                <option value="PM">Paule-Mandel</option>
+                                <option value="EB">Empirical Bayes</option>
+                                <option value="SJ">Sidik-Jonkman</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>CI Method</label>
+                            <select id="pubCIMethod">
+                                <option value="unknown">Unknown/Not Stated</option>
+                                <option value="wald">Wald (z-based)</option>
+                                <option value="hksj">HKSJ (t-based)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Model</label>
+                            <select id="pubModel">
+                                <option value="RE">Random Effects</option>
+                                <option value="FE">Fixed Effect</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <!-- Summary Stats -->
+            <div class="grid-4" style="margin-bottom: 1.5rem;">
+                <div class="stat-box critical">
+                    <div class="number" id="criticalCount">0</div>
+                    <div class="label">Critical Errors</div>
+                </div>
+                <div class="stat-box warning">
+                    <div class="number" id="warningCount">0</div>
+                    <div class="label">Warnings</div>
+                </div>
+                <div class="stat-box ok">
+                    <div class="number" id="matchCount">0</div>
+                    <div class="label">Verified OK</div>
+                </div>
+                <div class="stat-box info">
+                    <div class="number" id="bestEstimator">—</div>
+                    <div class="label">Best Matching Estimator</div>
+                </div>
+            </div>
+
+            <!-- Estimator Comparison -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔄 Multi-Estimator Comparison</div>
+                    <div class="estimator-pills" id="estimatorPills"></div>
+                </div>
+                <div class="card-body">
+                    <div class="data-table-container">
+                        <table class="data-table estimator-table" id="estimatorTable">
+                            <thead>
+                                <tr>
+                                    <th>Statistic</th>
+                                    <th>Published</th>
+                                    <th>DL</th>
+                                    <th>REML</th>
+                                    <th>PM</th>
+                                    <th>EB</th>
+                                    <th>FE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="estimatorTableBody"></tbody>
+                        </table>
+                    </div>
+                    <p class="method-note">Cells highlighted green indicate closest match to published value. HKSJ adjustment applied when enabled.</p>
+                </div>
+            </div>
+
+            <!-- Forest Plots -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--accent-purple);">📄 Published</div>
+                    </div>
+                    <div class="card-body">
+                        <div id="pubStatsDisplay"></div>
+                        <div class="forest-container">
+                            <svg id="forestPublished" class="forest-svg"></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--accent-cyan);">🔬 Recalculated (Best Match)</div>
+                    </div>
+                    <div class="card-body">
+                        <div id="calcStatsDisplay"></div>
+                        <div class="forest-container">
+                            <svg id="forestRecalculated" class="forest-svg"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weight Comparison -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⚖️ Study Weight Verification</div>
+                </div>
+                <div class="card-body">
+                    <div class="data-table-container">
+                        <table class="data-table" id="weightTable">
+                            <thead>
+                                <tr>
+                                    <th>Study</th>
+                                    <th>Published (%)</th>
+                                    <th>DL (%)</th>
+                                    <th>REML (%)</th>
+                                    <th>FE (%)</th>
+                                    <th>Best Match</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="weightTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave-One-Out Analysis -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔍 Leave-One-Out Sensitivity Analysis</div>
+                </div>
+                <div class="card-body">
+                    <div class="data-table-container">
+                        <table class="data-table" id="looTable">
+                            <thead>
+                                <tr>
+                                    <th>Excluded Study</th>
+                                    <th>Pooled Effect</th>
+                                    <th>95% CI</th>
+                                    <th>I²</th>
+                                    <th>Matches Published?</th>
+                                </tr>
+                            </thead>
+                            <tbody id="looTableBody"></tbody>
+                        </table>
+                    </div>
+                    <p class="method-note" id="looNote"></p>
+                </div>
+            </div>
+
+            <!-- Funnel Plot & Egger's Test -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📈 Funnel Plot & Publication Bias</div>
+                </div>
+                <div class="card-body">
+                    <div class="grid-2">
+                        <div class="funnel-container">
+                            <svg id="funnelPlot" class="forest-svg"></svg>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem;">Egger's Regression Test</h4>
+                            <div class="stat-row">
+                                <span class="stat-label">Intercept</span>
+                                <span class="stat-value mono" id="eggerIntercept">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">SE (intercept)</span>
+                                <span class="stat-value mono" id="eggerSE">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">t-value</span>
+                                <span class="stat-value mono" id="eggerT">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">p-value</span>
+                                <span class="stat-value mono" id="eggerP">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Interpretation</span>
+                                <span class="stat-value" id="eggerInterpret">—</span>
+                            </div>
+                            <p class="method-note">Egger's test regresses standardized effect (y/se) on precision (1/se). Significant intercept suggests funnel asymmetry.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Interval -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🎯 Prediction Interval & τ² Uncertainty</div>
+                </div>
+                <div class="card-body">
+                    <div class="grid-2">
+                        <div>
+                            <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem;">Prediction Interval</h4>
+                            <div class="stat-row">
+                                <span class="stat-label">Published PI</span>
+                                <span class="stat-value mono" id="pubPIDisplay">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Calculated PI</span>
+                                <span class="stat-value mono" id="calcPIDisplay">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Status</span>
+                                <span class="stat-value" id="piStatus">—</span>
+                            </div>
+                            <p class="method-note">PI = θ̂ ± t_{k-2} × √(SE² + τ²). Shows range where true effect in a new study might fall.</p>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem;">τ² Confidence Interval (Q-Profile)</h4>
+                            <div class="stat-row">
+                                <span class="stat-label">τ² point estimate</span>
+                                <span class="stat-value mono" id="tau2Point">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">95% CI for τ²</span>
+                                <span class="stat-value mono" id="tau2CI">—</span>
+                            </div>
+                            <div class="stat-row">
+                                <span class="stat-label">Published τ² within CI?</span>
+                                <span class="stat-value" id="tau2Status">—</span>
+                            </div>
+                            <p class="method-note">Q-profile method inverts the Q statistic distribution to obtain confidence limits for τ².</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Findings -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📋 Audit Findings</div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-sm" onclick="exportReport('json')">JSON</button>
+                        <button class="btn btn-sm" onclick="exportReport('csv')">CSV</button>
+                        <button class="btn btn-sm btn-primary" onclick="exportReport('html')">HTML Report</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle);">
+                        <div>
+                            <h3 style="font-size: 1.1rem;">Verification Report</h3>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);" id="auditTimestamp"></span>
+                        </div>
+                        <div class="verdict-badge" id="verdictBadge">PENDING</div>
+                    </div>
+                    <ul class="findings-list" id="findingsList"></ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Meta-Analysis Audit Tool v2.0 | Multi-estimator verification with HKSJ adjustment</p>
+        <p style="margin-top: 0.25rem;">DL • REML • Paule-Mandel • Empirical Bayes | Q-Profile τ² CI | Egger's test | Prediction intervals</p>
+    </footer>
+
+    <script>
+    // ============================================
+    // GLOBAL STATE
+    // ============================================
+    let studyCounter = 0;
+    let auditResults = null;
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        for (let i = 0; i < 5; i++) addStudyRow();
+        setupDropzone();
+        updateInputMode();
+    });
+
+    // ============================================
+    // UI FUNCTIONS
+    // ============================================
+    function switchInputTab(tabName) {
+        document.querySelectorAll('.tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelector(`.tabs .tab-btn[onclick*="${tabName}"]`).classList.add('active');
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    function updateInputMode() {
+        const measure = document.getElementById('effectMeasure').value;
+        const isRatio = ['OR', 'RR', 'HR'].includes(measure);
+        const scale = document.getElementById('inputScale').value;
+        
+        document.getElementById('scaleToggleGroup').style.display = isRatio ? 'flex' : 'none';
+        document.getElementById('effectHeader').textContent = isRatio 
+            ? (scale === 'log' ? `log(${measure})` : measure)
+            : measure;
+        
+        if (!isRatio) {
+            document.getElementById('inputScale').value = 'natural';
+            document.getElementById('ciScale').value = 'natural';
+        }
+    }
+
+    function addStudyRow(data = {}) {
+        studyCounter++;
+        const tbody = document.getElementById('studyTableBody');
+        const row = document.createElement('tr');
+        row.id = `row-${studyCounter}`;
+        row.innerHTML = `
+            <td class="mono" style="color: var(--text-muted);">${studyCounter}</td>
+            <td><input type="text" placeholder="Author Year" value="${data.study || ''}"></td>
+            <td><input type="number" step="any" placeholder="e.g., 0.85" value="${data.effect !== undefined ? data.effect : ''}"></td>
+            <td><input type="number" step="any" placeholder="e.g., 0.15" value="${data.se !== undefined ? data.se : ''}"></td>
+            <td><input type="number" step="any" placeholder="e.g., 0.72" value="${data.ciLower !== undefined ? data.ciLower : ''}"></td>
+            <td><input type="number" step="any" placeholder="e.g., 1.01" value="${data.ciUpper !== undefined ? data.ciUpper : ''}"></td>
+            <td><input type="number" step="any" placeholder="e.g., 12.5" value="${data.pubWeight !== undefined ? data.pubWeight : ''}"></td>
+            <td><button class="remove-row" onclick="this.closest('tr').remove()">×</button></td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    function addMultipleRows(n) {
+        for (let i = 0; i < n; i++) addStudyRow();
+    }
+
+    function setupDropzone() {
+        const dz = document.getElementById('dropzone');
+        dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+        dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+        dz.addEventListener('drop', e => {
+            e.preventDefault();
+            dz.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file?.name.endsWith('.csv')) parseCSV(file);
+        });
+    }
+
+    function handleCSVUpload(e) {
+        const file = e.target.files[0];
+        if (file) parseCSV(file);
+    }
+
+    function parseCSV(file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const lines = e.target.result.trim().split('\n');
+            document.getElementById('studyTableBody').innerHTML = '';
+            studyCounter = 0;
+            for (let i = 1; i < lines.length; i++) {
+                const v = lines[i].split(',').map(x => x.trim());
+                if (v.length >= 2) {
+                    addStudyRow({
+                        study: v[0], effect: v[1], se: v[2] || '',
+                        ciLower: v[3] || '', ciUpper: v[4] || '', pubWeight: v[5] || ''
+                    });
+                }
+            }
+            switchInputTab('manual');
+        };
+        reader.readAsText(file);
+    }
+
+    function clearAll() {
+        document.getElementById('studyTableBody').innerHTML = '';
+        studyCounter = 0;
+        for (let i = 0; i < 5; i++) addStudyRow();
+        ['pubEffect','pubCILower','pubCIUpper','pubI2','pubTau2','pubQ','pubPhet','pubPILower','pubPIUpper']
+            .forEach(id => document.getElementById(id).value = '');
+        document.getElementById('resultsSection').classList.add('hidden');
+        auditResults = null;
+    }
+
+    // ============================================
+    // SAMPLE DATA
+    // ============================================
+    const samples = {
+        correct: {
+            studies: [
+                { study: 'Smith 2018', effect: 0.82, se: 0.142, ciLower: 0.62, ciUpper: 1.09, pubWeight: 18.4 },
+                { study: 'Jones 2019', effect: 0.75, se: 0.178, ciLower: 0.53, ciUpper: 1.06, pubWeight: 12.2 },
+                { study: 'Brown 2020', effect: 0.90, se: 0.098, ciLower: 0.74, ciUpper: 1.09, pubWeight: 32.5 },
+                { study: 'Wilson 2020', effect: 0.70, se: 0.201, ciLower: 0.47, ciUpper: 1.04, pubWeight: 9.9 },
+                { study: 'Taylor 2021', effect: 0.95, se: 0.125, ciLower: 0.74, ciUpper: 1.21, pubWeight: 22.6 },
+                { study: 'Davis 2021', effect: 0.64, se: 0.267, ciLower: 0.38, ciUpper: 1.08, pubWeight: 4.4 }
+            ],
+            pub: { effect: 0.83, ciLower: 0.73, ciUpper: 0.95, i2: 10.5, tau2: 0.002, q: 5.59, phet: 0.35, estimator: 'DL', ciMethod: 'wald' }
+        },
+        correct_reml: {
+            studies: [
+                { study: 'Alpha 2019', effect: 0.78, se: 0.145, ciLower: 0.59, ciUpper: 1.04, pubWeight: 16.8 },
+                { study: 'Beta 2020', effect: 0.85, se: 0.112, ciLower: 0.68, ciUpper: 1.06, pubWeight: 27.2 },
+                { study: 'Gamma 2020', effect: 0.68, se: 0.189, ciLower: 0.47, ciUpper: 0.99, pubWeight: 10.1 },
+                { study: 'Delta 2021', effect: 0.92, se: 0.095, ciLower: 0.76, ciUpper: 1.11, pubWeight: 36.8 },
+                { study: 'Epsilon 2021', effect: 0.71, se: 0.234, ciLower: 0.45, ciUpper: 1.12, pubWeight: 9.1 }
+            ],
+            pub: { effect: 0.83, ciLower: 0.74, ciUpper: 0.93, i2: 18.2, tau2: 0.006, q: 4.89, phet: 0.30, estimator: 'REML', ciMethod: 'wald' }
+        },
+        correct_hksj: {
+            studies: [
+                { study: 'Trial A', effect: 0.80, se: 0.156, ciLower: 0.59, ciUpper: 1.09, pubWeight: 17.5 },
+                { study: 'Trial B', effect: 0.72, se: 0.134, ciLower: 0.55, ciUpper: 0.94, pubWeight: 23.1 },
+                { study: 'Trial C', effect: 0.88, se: 0.112, ciLower: 0.71, ciUpper: 1.10, pubWeight: 31.2 },
+                { study: 'Trial D', effect: 0.76, se: 0.178, ciLower: 0.54, ciUpper: 1.08, pubWeight: 14.2 },
+                { study: 'Trial E', effect: 0.91, se: 0.167, ciLower: 0.66, ciUpper: 1.26, pubWeight: 14.0 }
+            ],
+            pub: { effect: 0.81, ciLower: 0.71, ciUpper: 0.93, i2: 0, tau2: 0, q: 2.12, phet: 0.71, estimator: 'DL', ciMethod: 'hksj' }
+        },
+        weight_error: {
+            studies: [
+                { study: 'Alpha 2019', effect: 0.80, se: 0.156, ciLower: 0.59, ciUpper: 1.09, pubWeight: 25.0 },
+                { study: 'Beta 2020', effect: 0.84, se: 0.112, ciLower: 0.67, ciUpper: 1.05, pubWeight: 15.0 },
+                { study: 'Gamma 2020', effect: 0.72, se: 0.198, ciLower: 0.48, ciUpper: 1.07, pubWeight: 30.0 },
+                { study: 'Delta 2021', effect: 0.91, se: 0.089, ciLower: 0.76, ciUpper: 1.10, pubWeight: 20.0 },
+                { study: 'Epsilon 2021', effect: 0.60, se: 0.312, ciLower: 0.33, ciUpper: 1.10, pubWeight: 10.0 }
+            ],
+            pub: { effect: 0.82, ciLower: 0.73, ciUpper: 0.92, i2: 12.3, tau2: 0.003, q: 4.56, phet: 0.34, estimator: 'DL', ciMethod: 'wald' }
+        },
+        effect_error: {
+            studies: [
+                { study: 'Trial A', effect: 0.85, se: 0.134, ciLower: 0.65, ciUpper: 1.11, pubWeight: 20.1 },
+                { study: 'Trial B', effect: 0.62, se: 0.189, ciLower: 0.43, ciUpper: 0.90, pubWeight: 11.0 },
+                { study: 'Trial C', effect: 0.92, se: 0.095, ciLower: 0.77, ciUpper: 1.10, pubWeight: 35.8 },
+                { study: 'Trial D', effect: 0.77, se: 0.167, ciLower: 0.55, ciUpper: 1.08, pubWeight: 13.8 },
+                { study: 'Trial E', effect: 0.87, se: 0.142, ciLower: 0.66, ciUpper: 1.15, pubWeight: 19.3 }
+            ],
+            pub: { effect: 0.72, ciLower: 0.62, ciUpper: 0.84, i2: 24.5, tau2: 0.012, q: 5.30, phet: 0.26, estimator: 'DL', ciMethod: 'wald' }
+        },
+        i2_error: {
+            studies: [
+                { study: 'Study 1', effect: 0.71, se: 0.145, ciLower: 0.53, ciUpper: 0.95, pubWeight: 17.2 },
+                { study: 'Study 2', effect: 1.10, se: 0.167, ciLower: 0.79, ciUpper: 1.53, pubWeight: 13.5 },
+                { study: 'Study 3', effect: 0.58, se: 0.198, ciLower: 0.39, ciUpper: 0.86, pubWeight: 10.1 },
+                { study: 'Study 4', effect: 0.92, se: 0.089, ciLower: 0.77, ciUpper: 1.10, pubWeight: 38.9 },
+                { study: 'Study 5', effect: 0.82, se: 0.123, ciLower: 0.64, ciUpper: 1.05, pubWeight: 20.3 }
+            ],
+            pub: { effect: 0.83, ciLower: 0.71, ciUpper: 0.97, i2: 25.0, tau2: 0.008, q: 5.33, phet: 0.26, estimator: 'DL', ciMethod: 'wald' }
+        },
+        ci_narrow: {
+            studies: [
+                { study: 'RCT 2018', effect: 0.84, se: 0.128, ciLower: 0.65, ciUpper: 1.09, pubWeight: 21.8 },
+                { study: 'RCT 2019', effect: 0.75, se: 0.156, ciLower: 0.55, ciUpper: 1.02, pubWeight: 15.3 },
+                { study: 'RCT 2020a', effect: 0.90, se: 0.102, ciLower: 0.73, ciUpper: 1.11, pubWeight: 29.5 },
+                { study: 'RCT 2020b', effect: 0.80, se: 0.145, ciLower: 0.60, ciUpper: 1.07, pubWeight: 17.5 },
+                { study: 'RCT 2021', effect: 0.87, se: 0.112, ciLower: 0.70, ciUpper: 1.08, pubWeight: 15.9 }
+            ],
+            pub: { effect: 0.84, ciLower: 0.80, ciUpper: 0.88, i2: 5.2, tau2: 0.001, q: 4.22, phet: 0.38, estimator: 'DL', ciMethod: 'wald' }
+        },
+        sign_flip: {
+            studies: [
+                { study: 'Trial 1', effect: 0.78, se: 0.134, ciLower: 0.60, ciUpper: 1.02, pubWeight: 22.5 },
+                { study: 'Trial 2', effect: 0.82, se: 0.145, ciLower: 0.62, ciUpper: 1.09, pubWeight: 19.8 },
+                { study: 'Trial 3', effect: 0.88, se: 0.112, ciLower: 0.70, ciUpper: 1.10, pubWeight: 31.2 },
+                { study: 'Trial 4', effect: 0.75, se: 0.167, ciLower: 0.54, ciUpper: 1.04, pubWeight: 15.5 },
+                { study: 'Trial 5', effect: 0.91, se: 0.189, ciLower: 0.63, ciUpper: 1.32, pubWeight: 11.0 }
+            ],
+            pub: { effect: 1.20, ciLower: 1.08, ciUpper: 1.34, i2: 0, tau2: 0, q: 1.89, phet: 0.76, estimator: 'DL', ciMethod: 'wald' }
+        },
+        excluded_study: {
+            studies: [
+                { study: 'Alpha 2018', effect: 0.82, se: 0.123, ciLower: 0.64, ciUpper: 1.05, pubWeight: 0 },
+                { study: 'Beta 2019', effect: 0.78, se: 0.145, ciLower: 0.59, ciUpper: 1.03, pubWeight: 24.1 },
+                { study: 'Gamma 2020', effect: 0.85, se: 0.112, ciLower: 0.68, ciUpper: 1.06, pubWeight: 35.2 },
+                { study: 'Delta 2020', effect: 0.91, se: 0.156, ciLower: 0.67, ciUpper: 1.24, pubWeight: 21.5 },
+                { study: 'Epsilon 2021', effect: 0.88, se: 0.178, ciLower: 0.62, ciUpper: 1.25, pubWeight: 19.2 }
+            ],
+            pub: { effect: 0.85, ciLower: 0.75, ciUpper: 0.96, i2: 0, tau2: 0, q: 0.89, phet: 0.83, estimator: 'DL', ciMethod: 'wald' }
+        }
+    };
+
+    function loadSample(name) {
+        const s = samples[name];
+        if (!s) return;
+        
+        document.getElementById('studyTableBody').innerHTML = '';
+        studyCounter = 0;
+        document.getElementById('effectMeasure').value = 'OR';
+        document.getElementById('inputScale').value = 'natural';
+        document.getElementById('ciScale').value = 'natural';
+        updateInputMode();
+        
+        s.studies.forEach(st => addStudyRow(st));
+        
+        document.getElementById('pubEffect').value = s.pub.effect || '';
+        document.getElementById('pubCILower').value = s.pub.ciLower || '';
+        document.getElementById('pubCIUpper').value = s.pub.ciUpper || '';
+        document.getElementById('pubI2').value = s.pub.i2 || '';
+        document.getElementById('pubTau2').value = s.pub.tau2 || '';
+        document.getElementById('pubQ').value = s.pub.q || '';
+        document.getElementById('pubPhet').value = s.pub.phet || '';
+        document.getElementById('pubEstimator').value = s.pub.estimator || 'unknown';
+        document.getElementById('pubCIMethod').value = s.pub.ciMethod || 'unknown';
+        
+        switchInputTab('manual');
+    }
+
+    // ============================================
+    // STATISTICAL FUNCTIONS
+    // ============================================
+    
+    // Normal CDF
+    function pnorm(x) {
+        const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+        const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+        const sign = x < 0 ? -1 : 1;
+        x = Math.abs(x) / Math.sqrt(2);
+        const t = 1 / (1 + p * x);
+        const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+        return 0.5 * (1 + sign * y);
+    }
+    
+    // Log-gamma function
+    function lgamma(x) {
+        const cof = [76.18009172947146, -86.50532032941677, 24.01409824083091,
+                    -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+        let y = x, tmp = x + 5.5;
+        tmp -= (x + 0.5) * Math.log(tmp);
+        let ser = 1.000000000190015;
+        for (let j = 0; j < 6; j++) ser += cof[j] / ++y;
+        return -tmp + Math.log(2.5066282746310005 * ser / x);
+    }
+    
+    // Incomplete gamma (regularized)
+    function gammainc(a, x) {
+        if (x < 0 || a <= 0) return 0;
+        if (x === 0) return 0;
+        
+        const ITMAX = 200, EPS = 3e-7;
+        const gln = lgamma(a);
+        
+        if (x < a + 1) {
+            let ap = a, sum = 1 / a, del = sum;
+            for (let n = 1; n <= ITMAX; n++) {
+                ap++;
+                del *= x / ap;
+                sum += del;
+                if (Math.abs(del) < Math.abs(sum) * EPS)
+                    return sum * Math.exp(-x + a * Math.log(x) - gln);
+            }
+        } else {
+            let b = x + 1 - a, c = 1e30, d = 1 / b, h = d;
+            for (let i = 1; i <= ITMAX; i++) {
+                const an = -i * (i - a);
+                b += 2;
+                d = an * d + b;
+                if (Math.abs(d) < 1e-30) d = 1e-30;
+                c = b + an / c;
+                if (Math.abs(c) < 1e-30) c = 1e-30;
+                d = 1 / d;
+                const del = d * c;
+                h *= del;
+                if (Math.abs(del - 1) < EPS)
+                    return 1 - Math.exp(-x + a * Math.log(x) - gln) * h;
+            }
+        }
+        return 1;
+    }
+    
+    // Chi-square CDF
+    function pchisq(x, df) {
+        if (x <= 0) return 0;
+        return gammainc(df / 2, x / 2);
+    }
+    
+    // Chi-square quantile (inverse CDF) - Newton-Raphson
+    function qchisq(p, df) {
+        if (p <= 0) return 0;
+        if (p >= 1) return Infinity;
+        
+        // Initial guess
+        let x = df;
+        for (let i = 0; i < 50; i++) {
+            const fx = pchisq(x, df) - p;
+            if (Math.abs(fx) < 1e-10) break;
+            // PDF of chi-square
+            const pdf = Math.exp((df/2 - 1) * Math.log(x) - x/2 - (df/2) * Math.log(2) - lgamma(df/2));
+            if (pdf < 1e-15) break;
+            x = Math.max(0.001, x - fx / pdf);
+        }
+        return x;
+    }
+    
+    // t-distribution CDF (approximation)
+    function pt(t, df) {
+        const x = df / (df + t * t);
+        const a = df / 2, b = 0.5;
+        const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+        const betainc = x < (a + 1) / (a + b + 2) 
+            ? bt * betacf(x, a, b) / a 
+            : 1 - bt * betacf(1 - x, b, a) / b;
+        return t < 0 ? 0.5 * betainc : 1 - 0.5 * betainc;
+    }
+    
+    function betacf(x, a, b) {
+        const MAXIT = 100, EPS = 3e-7;
+        const qab = a + b, qap = a + 1, qam = a - 1;
+        let c = 1, d = 1 - qab * x / qap;
+        if (Math.abs(d) < 1e-30) d = 1e-30;
+        d = 1 / d;
+        let h = d;
+        for (let m = 1; m <= MAXIT; m++) {
+            const m2 = 2 * m;
+            let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+            d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30;
+            c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30;
+            d = 1 / d; h *= d * c;
+            aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+            d = 1 + aa * d; if (Math.abs(d) < 1e-30) d = 1e-30;
+            c = 1 + aa / c; if (Math.abs(c) < 1e-30) c = 1e-30;
+            d = 1 / d;
+            const del = d * c;
+            h *= del;
+            if (Math.abs(del - 1) < EPS) break;
+        }
+        return h;
+    }
+    
+    // t quantile
+    function qt(p, df) {
+        if (p <= 0) return -Infinity;
+        if (p >= 1) return Infinity;
+        if (p === 0.5) return 0;
+        
+        // Newton-Raphson
+        let t = p > 0.5 ? 1 : -1;
+        for (let i = 0; i < 50; i++) {
+            const cdf = pt(t, df);
+            const err = cdf - p;
+            if (Math.abs(err) < 1e-10) break;
+            // PDF of t
+            const pdf = Math.exp(lgamma((df+1)/2) - lgamma(df/2)) / (Math.sqrt(df * Math.PI) * Math.pow(1 + t*t/df, (df+1)/2));
+            t -= err / pdf;
+        }
+        return t;
+    }
+
+    // ============================================
+    // META-ANALYSIS ENGINE
+    // ============================================
+    
+    function collectStudyData() {
+        const rows = document.querySelectorAll('#studyTableBody tr');
+        const measure = document.getElementById('effectMeasure').value;
+        const isRatio = ['OR', 'RR', 'HR'].includes(measure);
+        const inputScale = document.getElementById('inputScale').value;
+        const ciScale = document.getElementById('ciScale').value;
+        const studies = [];
+        
+        rows.forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const study = inputs[0].value.trim();
+            let effect = parseFloat(inputs[1].value);
+            let se = parseFloat(inputs[2].value);
+            let ciLower = parseFloat(inputs[3].value);
+            let ciUpper = parseFloat(inputs[4].value);
+            const pubWeight = parseFloat(inputs[5].value);
+            
+            if (!study || isNaN(effect)) return;
+            
+            // Convert to log scale for ratios
+            if (isRatio && inputScale === 'natural') {
+                effect = Math.log(effect);
+            }
+            
+            // Handle CI scale
+            if (isRatio && ciScale === 'natural' && !isNaN(ciLower) && !isNaN(ciUpper)) {
+                ciLower = Math.log(ciLower);
+                ciUpper = Math.log(ciUpper);
+            }
+            
+            // Derive SE from CI if missing
+            if (isNaN(se) && !isNaN(ciLower) && !isNaN(ciUpper)) {
+                se = (ciUpper - ciLower) / 3.92;
+            }
+            
+            if (!isNaN(se) && se > 0) {
+                studies.push({
+                    study, effect, se,
+                    ciLower: isNaN(ciLower) ? effect - 1.96 * se : ciLower,
+                    ciUpper: isNaN(ciUpper) ? effect + 1.96 * se : ciUpper,
+                    pubWeight: isNaN(pubWeight) ? null : pubWeight
+                });
+            }
+        });
+        
+        return studies;
+    }
+
+    // Fixed effect meta-analysis
+    function metaFE(studies) {
+        const k = studies.length;
+        if (k === 0) return null;
+        
+        const w = studies.map(s => 1 / (s.se * s.se));
+        const sumW = w.reduce((a, b) => a + b, 0);
+        const effect = studies.reduce((sum, s, i) => sum + w[i] * s.effect, 0) / sumW;
+        const se = Math.sqrt(1 / sumW);
+        
+        // Q statistic
+        const Q = studies.reduce((sum, s, i) => sum + w[i] * Math.pow(s.effect - effect, 2), 0);
+        const df = k - 1;
+        const pHet = 1 - pchisq(Q, df);
+        const I2 = Math.max(0, (Q - df) / Q * 100);
+        
+        // Weights as percentages
+        const weights = w.map(wi => wi / sumW * 100);
+        
+        return {
+            effect, se,
+            ciLower: effect - 1.96 * se,
+            ciUpper: effect + 1.96 * se,
+            Q, df, pHet, I2, tau2: 0,
+            weights, k,
+            method: 'FE'
+        };
+    }
+
+    // DerSimonian-Laird
+    function metaDL(studies) {
+        const fe = metaFE(studies);
+        if (!fe) return null;
+        
+        const k = studies.length;
+        const w = studies.map(s => 1 / (s.se * s.se));
+        const sumW = w.reduce((a, b) => a + b, 0);
+        const C = sumW - w.reduce((sum, wi) => sum + wi * wi, 0) / sumW;
+        
+        const tau2 = Math.max(0, (fe.Q - fe.df) / C);
+        
+        // Random effects weights
+        const wRE = studies.map(s => 1 / (s.se * s.se + tau2));
+        const sumWRE = wRE.reduce((a, b) => a + b, 0);
+        const effect = studies.reduce((sum, s, i) => sum + wRE[i] * s.effect, 0) / sumWRE;
+        const se = Math.sqrt(1 / sumWRE);
+        
+        return {
+            effect, se,
+            ciLower: effect - 1.96 * se,
+            ciUpper: effect + 1.96 * se,
+            Q: fe.Q, df: fe.df, pHet: fe.pHet,
+            I2: Math.max(0, (fe.Q - fe.df) / fe.Q * 100),
+            tau2,
+            weights: wRE.map(wi => wi / sumWRE * 100),
+            k,
+            method: 'DL'
+        };
+    }
+
+    // REML estimator (iterative)
+    function metaREML(studies, maxIter = 100, tol = 1e-8) {
+        const fe = metaFE(studies);
+        if (!fe) return null;
+        
+        const k = studies.length;
+        const y = studies.map(s => s.effect);
+        const v = studies.map(s => s.se * s.se);
+        
+        // Start with DL estimate
+        let tau2 = metaDL(studies).tau2;
+        
+        for (let iter = 0; iter < maxIter; iter++) {
+            const w = v.map(vi => 1 / (vi + tau2));
+            const sumW = w.reduce((a, b) => a + b, 0);
+            const mu = y.reduce((sum, yi, i) => sum + w[i] * yi, 0) / sumW;
+            
+            // First derivative
+            const dl = -0.5 * w.reduce((sum, wi, i) => sum + wi - wi * wi * Math.pow(y[i] - mu, 2), 0);
+            
+            // Second derivative (Fisher information)
+            const d2l = 0.5 * w.reduce((sum, wi) => sum + wi * wi, 0);
+            
+            const delta = dl / d2l;
+            const tau2New = Math.max(0, tau2 + delta);
+            
+            if (Math.abs(tau2New - tau2) < tol) break;
+            tau2 = tau2New;
+        }
+        
+        const w = v.map(vi => 1 / (vi + tau2));
+        const sumW = w.reduce((a, b) => a + b, 0);
+        const effect = y.reduce((sum, yi, i) => sum + w[i] * yi, 0) / sumW;
+        const se = Math.sqrt(1 / sumW);
+        
+        return {
+            effect, se,
+            ciLower: effect - 1.96 * se,
+            ciUpper: effect + 1.96 * se,
+            Q: fe.Q, df: fe.df, pHet: fe.pHet,
+            I2: tau2 > 0 ? Math.max(0, (fe.Q - fe.df) / fe.Q * 100) : 0,
+            tau2,
+            weights: w.map(wi => wi / sumW * 100),
+            k,
+            method: 'REML'
+        };
+    }
+
+    // Paule-Mandel estimator
+    function metaPM(studies, maxIter = 100, tol = 1e-8) {
+        const fe = metaFE(studies);
+        if (!fe) return null;
+        
+        const k = studies.length;
+        const y = studies.map(s => s.effect);
+        const v = studies.map(s => s.se * s.se);
+        const df = k - 1;
+        
+        // Iteratively solve Q(tau2) = k - 1
+        let tau2 = metaDL(studies).tau2;
+        
+        for (let iter = 0; iter < maxIter; iter++) {
+            const w = v.map(vi => 1 / (vi + tau2));
+            const sumW = w.reduce((a, b) => a + b, 0);
+            const mu = y.reduce((sum, yi, i) => sum + w[i] * yi, 0) / sumW;
+            const Q = y.reduce((sum, yi, i) => sum + w[i] * Math.pow(yi - mu, 2), 0);
+            
+            if (Math.abs(Q - df) < tol) break;
+            
+            // Newton step
+            const dQ = -w.reduce((sum, wi, i) => sum + wi * wi * Math.pow(y[i] - mu, 2), 0);
+            if (Math.abs(dQ) < 1e-15) break;
+            
+            const tau2New = Math.max(0, tau2 - (Q - df) / dQ);
+            if (Math.abs(tau2New - tau2) < tol) break;
+            tau2 = tau2New;
+        }
+        
+        const w = v.map(vi => 1 / (vi + tau2));
+        const sumW = w.reduce((a, b) => a + b, 0);
+        const effect = y.reduce((sum, yi, i) => sum + w[i] * yi, 0) / sumW;
+        const se = Math.sqrt(1 / sumW);
+        
+        return {
+            effect, se,
+            ciLower: effect - 1.96 * se,
+            ciUpper: effect + 1.96 * se,
+            Q: fe.Q, df: fe.df, pHet: fe.pHet,
+            I2: tau2 > 0 ? Math.max(0, (fe.Q - fe.df) / fe.Q * 100) : 0,
+            tau2,
+            weights: w.map(wi => wi / sumW * 100),
+            k,
+            method: 'PM'
+        };
+    }
+
+    // Empirical Bayes estimator
+    function metaEB(studies) {
+        const fe = metaFE(studies);
+        if (!fe) return null;
+        
+        const k = studies.length;
+        const y = studies.map(s => s.effect);
+        const v = studies.map(s => s.se * s.se);
+        
+        // EB: tau2 = max(0, (Q - df) / sum(w) - sum(w*v) / sum(w))
+        const w = v.map(vi => 1 / vi);
+        const sumW = w.reduce((a, b) => a + b, 0);
+        
+        const tau2 = Math.max(0, (fe.Q - fe.df) / sumW);
+        
+        const wRE = v.map(vi => 1 / (vi + tau2));
+        const sumWRE = wRE.reduce((a, b) => a + b, 0);
+        const effect = y.reduce((sum, yi, i) => sum + wRE[i] * yi, 0) / sumWRE;
+        const se = Math.sqrt(1 / sumWRE);
+        
+        return {
+            effect, se,
+            ciLower: effect - 1.96 * se,
+            ciUpper: effect + 1.96 * se,
+            Q: fe.Q, df: fe.df, pHet: fe.pHet,
+            I2: tau2 > 0 ? Math.max(0, (fe.Q - fe.df) / fe.Q * 100) : 0,
+            tau2,
+            weights: wRE.map(wi => wi / sumWRE * 100),
+            k,
+            method: 'EB'
+        };
+    }
+
+    // Apply HKSJ adjustment
+    function applyHKSJ(meta, studies) {
+        if (!meta || meta.k < 3) return meta;
+        
+        const k = meta.k;
+        const y = studies.map(s => s.effect);
+        const w = studies.map(s => 1 / (s.se * s.se + meta.tau2));
+        const sumW = w.reduce((a, b) => a + b, 0);
+        
+        // Q* statistic for HKSJ
+        const Qstar = y.reduce((sum, yi, i) => sum + w[i] * Math.pow(yi - meta.effect, 2), 0);
+        const seAdj = Math.sqrt(Qstar / ((k - 1) * sumW));
+        
+        const tCrit = qt(0.975, k - 1);
+        
+        return {
+            ...meta,
+            se: seAdj,
+            ciLower: meta.effect - tCrit * seAdj,
+            ciUpper: meta.effect + tCrit * seAdj,
+            hksj: true
+        };
+    }
+
+    // Prediction interval
+    function calcPredictionInterval(meta, studies) {
+        if (!meta || meta.k < 3) return { piLower: NaN, piUpper: NaN };
+        
+        const tCrit = qt(0.975, meta.k - 2);
+        const piSE = Math.sqrt(meta.se * meta.se + meta.tau2);
+        
+        return {
+            piLower: meta.effect - tCrit * piSE,
+            piUpper: meta.effect + tCrit * piSE
+        };
+    }
+
+    // Q-profile CI for tau²
+    function tau2CI(studies, tau2Point) {
+        const k = studies.length;
+        if (k < 2) return { lower: NaN, upper: NaN };
+        
+        const df = k - 1;
+        const y = studies.map(s => s.effect);
+        const v = studies.map(s => s.se * s.se);
+        
+        // Q as function of tau²
+        function Qfunc(tau2) {
+            const w = v.map(vi => 1 / (vi + tau2));
+            const sumW = w.reduce((a, b) => a + b, 0);
+            const mu = y.reduce((sum, yi, i) => sum + w[i] * yi, 0) / sumW;
+            return y.reduce((sum, yi, i) => sum + w[i] * Math.pow(yi - mu, 2), 0);
+        }
+        
+        const qLower = qchisq(0.975, df);
+        const qUpper = qchisq(0.025, df);
+        
+        // Find tau² where Q(tau²) = qLower (upper bound for tau²)
+        function solveTau2(targetQ) {
+            let lo = 0, hi = 10;
+            // Expand hi if needed
+            while (Qfunc(hi) > targetQ && hi < 1000) hi *= 2;
+            
+            for (let i = 0; i < 50; i++) {
+                const mid = (lo + hi) / 2;
+                const Q = Qfunc(mid);
+                if (Math.abs(Q - targetQ) < 0.001) return mid;
+                if (Q > targetQ) lo = mid;
+                else hi = mid;
+            }
+            return (lo + hi) / 2;
+        }
+        
+        // Lower bound: Q(tau²) = qLower (97.5th percentile)
+        const tau2Upper = solveTau2(qUpper);
+        
+        // Upper bound: if Q at tau²=0 < qLower, lower bound is 0
+        const Q0 = Qfunc(0);
+        const tau2Lower = Q0 >= qLower ? solveTau2(qLower) : 0;
+        
+        return { lower: tau2Lower, upper: tau2Upper };
+    }
+
+    // Egger's test
+    function eggersTest(studies) {
+        if (studies.length < 3) return null;
+        
+        // Regression: y/se = a + b * (1/se)
+        const n = studies.length;
+        const x = studies.map(s => 1 / s.se);  // precision
+        const y = studies.map(s => s.effect / s.se);  // standardized effect
+        
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+        const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+        
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        
+        // Residuals and SE
+        const yHat = x.map(xi => intercept + slope * xi);
+        const residSS = y.reduce((sum, yi, i) => sum + Math.pow(yi - yHat[i], 2), 0);
+        const mse = residSS / (n - 2);
+        const seIntercept = Math.sqrt(mse * sumX2 / (n * sumX2 - sumX * sumX));
+        
+        const t = intercept / seIntercept;
+        const pValue = 2 * (1 - pt(Math.abs(t), n - 2));
+        
+        return { intercept, seIntercept, t, pValue };
+    }
+
+    // Leave-one-out analysis
+    function leaveOneOut(studies, estimator = 'DL') {
+        const metaFunc = { DL: metaDL, REML: metaREML, PM: metaPM, EB: metaEB, FE: metaFE }[estimator] || metaDL;
+        
+        return studies.map((_, i) => {
+            const subset = studies.filter((_, j) => j !== i);
+            const result = metaFunc(subset);
+            return {
+                excluded: studies[i].study,
+                ...result
+            };
+        });
+    }
+
+    // ============================================
+    // AUDIT LOGIC
+    // ============================================
+    
+    function runAudit() {
+        const studies = collectStudyData();
+        if (studies.length < 2) {
+            alert('Please enter at least 2 studies with valid data.');
+            return;
+        }
+        
+        const measure = document.getElementById('effectMeasure').value;
+        const isRatio = ['OR', 'RR', 'HR'].includes(measure);
+        
+        // Collect published values
+        const published = {
+            effect: parseFloat(document.getElementById('pubEffect').value),
+            ciLower: parseFloat(document.getElementById('pubCILower').value),
+            ciUpper: parseFloat(document.getElementById('pubCIUpper').value),
+            i2: parseFloat(document.getElementById('pubI2').value),
+            tau2: parseFloat(document.getElementById('pubTau2').value),
+            q: parseFloat(document.getElementById('pubQ').value),
+            phet: parseFloat(document.getElementById('pubPhet').value),
+            piLower: parseFloat(document.getElementById('pubPILower').value),
+            piUpper: parseFloat(document.getElementById('pubPIUpper').value),
+            estimator: document.getElementById('pubEstimator').value,
+            ciMethod: document.getElementById('pubCIMethod').value,
+            model: document.getElementById('pubModel').value
+        };
+        
+        // Convert published effect to log scale if needed
+        let pubEffectLog = published.effect;
+        let pubCILowerLog = published.ciLower;
+        let pubCIUpperLog = published.ciUpper;
+        let pubPILowerLog = published.piLower;
+        let pubPIUpperLog = published.piUpper;
+        
+        if (isRatio && !isNaN(published.effect)) {
+            pubEffectLog = Math.log(published.effect);
+            if (!isNaN(published.ciLower)) pubCILowerLog = Math.log(published.ciLower);
+            if (!isNaN(published.ciUpper)) pubCIUpperLog = Math.log(published.ciUpper);
+            if (!isNaN(published.piLower)) pubPILowerLog = Math.log(published.piLower);
+            if (!isNaN(published.piUpper)) pubPIUpperLog = Math.log(published.piUpper);
+        }
+        
+        // Run all estimators
+        const results = {
+            FE: metaFE(studies),
+            DL: metaDL(studies),
+            REML: metaREML(studies),
+            PM: metaPM(studies),
+            EB: metaEB(studies)
+        };
+        
+        // Also with HKSJ
+        const resultsHKSJ = {
+            DL_HKSJ: applyHKSJ(results.DL, studies),
+            REML_HKSJ: applyHKSJ(results.REML, studies),
+            PM_HKSJ: applyHKSJ(results.PM, studies),
+            EB_HKSJ: applyHKSJ(results.EB, studies)
+        };
+        
+        // Find best matching estimator
+        const allResults = { ...results, ...resultsHKSJ };
+        let bestMatch = 'DL';
+        let bestScore = Infinity;
+        
+        if (!isNaN(pubEffectLog)) {
+            for (const [name, res] of Object.entries(allResults)) {
+                if (!res) continue;
+                let score = Math.abs(res.effect - pubEffectLog);
+                if (!isNaN(pubCILowerLog)) score += Math.abs(res.ciLower - pubCILowerLog) * 0.5;
+                if (!isNaN(pubCIUpperLog)) score += Math.abs(res.ciUpper - pubCIUpperLog) * 0.5;
+                if (!isNaN(published.tau2)) score += Math.abs(res.tau2 - published.tau2) * 10;
+                
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestMatch = name;
+                }
+            }
+        }
+        
+        // Prediction interval
+        const pi = calcPredictionInterval(results.DL, studies);
+        
+        // Tau² CI
+        const tau2Conf = tau2CI(studies, results.DL.tau2);
+        
+        // Egger's test
+        const egger = eggersTest(studies);
+        
+        // Leave-one-out
+        const loo = leaveOneOut(studies, 'DL');
+        
+        // Check if LOO matches published
+        let looMatchStudy = null;
+        if (!isNaN(pubEffectLog)) {
+            for (const l of loo) {
+                if (Math.abs(l.effect - pubEffectLog) < 0.01) {
+                    looMatchStudy = l.excluded;
+                    break;
+                }
+            }
+        }
+        
+        // Run discrepancy checks
+        const findings = runDiscrepancyChecks({
+            published, pubEffectLog, pubCILowerLog, pubCIUpperLog,
+            results, resultsHKSJ, bestMatch,
+            pi, pubPILowerLog, pubPIUpperLog,
+            tau2Conf, studies, isRatio, looMatchStudy
+        });
+        
+        // Store results
+        auditResults = {
+            studies, published, results, resultsHKSJ,
+            bestMatch, pi, tau2Conf, egger, loo,
+            findings, isRatio, measure,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Display
+        displayResults();
+        document.getElementById('resultsSection').classList.remove('hidden');
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function runDiscrepancyChecks(data) {
+        const { published, pubEffectLog, pubCILowerLog, pubCIUpperLog,
+                results, resultsHKSJ, bestMatch,
+                pi, pubPILowerLog, pubPIUpperLog,
+                tau2Conf, studies, isRatio, looMatchStudy } = data;
+        
+        const findings = [];
+        const best = { ...results, ...resultsHKSJ }[bestMatch];
+        
+        // Principled thresholds based on SE
+        const effectThreshWarn = best.se * 0.5;
+        const effectThreshCrit = best.se * 1.5;
+        
+        // 1. Check df
+        if (studies.length !== best.k) {
+            findings.push({
+                type: 'critical', category: 'Degrees of Freedom',
+                message: `Study count mismatch`,
+                details: `Input has ${studies.length} studies but meta-analysis reports k=${best.k}`
+            });
+        } else {
+            findings.push({
+                type: 'ok', category: 'Degrees of Freedom',
+                message: `Verified: k = ${best.k} studies`, details: null
+            });
+        }
+        
+        // 2. Effect size
+        if (!isNaN(pubEffectLog)) {
+            const diff = Math.abs(best.effect - pubEffectLog);
+            const bestLabel = bestMatch.includes('HKSJ') ? bestMatch : bestMatch;
+            
+            // Check direction
+            if ((pubEffectLog > 0 && best.effect < 0) || (pubEffectLog < 0 && best.effect > 0)) {
+                findings.push({
+                    type: 'critical', category: 'Effect Direction',
+                    message: `Sign flip detected: published effect has opposite direction`,
+                    details: `Published suggests ${pubEffectLog > 0 ? 'harm' : 'benefit'}, recalculated suggests ${best.effect > 0 ? 'harm' : 'benefit'}`
+                });
+            }
+            
+            if (diff > effectThreshCrit) {
+                findings.push({
+                    type: 'critical', category: 'Pooled Effect',
+                    message: `Substantial discrepancy in pooled effect`,
+                    details: `Published: ${isRatio ? Math.exp(pubEffectLog).toFixed(3) : pubEffectLog.toFixed(3)}, Best match (${bestLabel}): ${isRatio ? Math.exp(best.effect).toFixed(3) : best.effect.toFixed(3)}`
+                });
+            } else if (diff > effectThreshWarn) {
+                findings.push({
+                    type: 'warning', category: 'Pooled Effect',
+                    message: `Minor discrepancy in pooled effect`,
+                    details: `Difference of ${diff.toFixed(4)} on log scale, within ${(diff/best.se).toFixed(1)} SE`
+                });
+            } else {
+                findings.push({
+                    type: 'ok', category: 'Pooled Effect',
+                    message: `Pooled effect verified with ${bestLabel}`,
+                    details: `Difference < 0.5 SE`
+                });
+            }
+        }
+        
+        // 3. CI check
+        if (!isNaN(pubCILowerLog) && !isNaN(pubCIUpperLog)) {
+            const pubWidth = pubCIUpperLog - pubCILowerLog;
+            const calcWidth = best.ciUpper - best.ciLower;
+            const widthRatio = pubWidth / calcWidth;
+            
+            if (widthRatio < 0.7) {
+                findings.push({
+                    type: 'critical', category: 'Confidence Interval',
+                    message: `Published CI is ${((1 - widthRatio) * 100).toFixed(0)}% narrower than expected`,
+                    details: `This suggests incorrect SE calculation or wrong CI method. Check if HKSJ was used.`
+                });
+            } else if (widthRatio > 1.4) {
+                findings.push({
+                    type: 'warning', category: 'Confidence Interval',
+                    message: `Published CI is wider than expected`,
+                    details: `May indicate HKSJ adjustment was applied`
+                });
+            } else {
+                findings.push({
+                    type: 'ok', category: 'Confidence Interval',
+                    message: `CI width consistent with calculation`,
+                    details: null
+                });
+            }
+        }
+        
+        // 4. I² check
+        if (!isNaN(published.i2)) {
+            const i2Diff = Math.abs(published.i2 - best.I2);
+            
+            // I² CI is roughly I² ± 20% for typical meta-analyses
+            if (i2Diff > 20) {
+                findings.push({
+                    type: 'critical', category: 'Heterogeneity (I²)',
+                    message: `I² substantially different: published ${published.i2.toFixed(1)}% vs calculated ${best.I2.toFixed(1)}%`,
+                    details: `Difference of ${i2Diff.toFixed(1)} percentage points`
+                });
+            } else if (i2Diff > 10) {
+                findings.push({
+                    type: 'warning', category: 'Heterogeneity (I²)',
+                    message: `I² moderately different`,
+                    details: `Published ${published.i2.toFixed(1)}% vs calculated ${best.I2.toFixed(1)}%`
+                });
+            } else {
+                findings.push({
+                    type: 'ok', category: 'Heterogeneity (I²)',
+                    message: `I² verified: ${best.I2.toFixed(1)}%`,
+                    details: null
+                });
+            }
+        }
+        
+        // 5. τ² check with CI
+        if (!isNaN(published.tau2)) {
+            const inCI = published.tau2 >= tau2Conf.lower && published.tau2 <= tau2Conf.upper;
+            
+            if (!inCI && !isNaN(tau2Conf.lower)) {
+                findings.push({
+                    type: 'warning', category: 'Between-study Variance (τ²)',
+                    message: `Published τ² outside Q-profile 95% CI`,
+                    details: `Published: ${published.tau2.toFixed(4)}, 95% CI: [${tau2Conf.lower.toFixed(4)}, ${tau2Conf.upper.toFixed(4)}]`
+                });
+            } else {
+                findings.push({
+                    type: 'ok', category: 'Between-study Variance (τ²)',
+                    message: `τ² within expected range`,
+                    details: `Published ${published.tau2.toFixed(4)} within Q-profile CI`
+                });
+            }
+        }
+        
+        // 6. Q statistic
+        if (!isNaN(published.q)) {
+            const qDiff = Math.abs(published.q - best.Q);
+            if (qDiff > 2) {
+                findings.push({
+                    type: 'warning', category: 'Q Statistic',
+                    message: `Q statistic differs: published ${published.q.toFixed(2)} vs calculated ${best.Q.toFixed(2)}`,
+                    details: null
+                });
+            } else {
+                findings.push({
+                    type: 'ok', category: 'Q Statistic',
+                    message: `Q statistic verified: ${best.Q.toFixed(2)}`,
+                    details: null
+                });
+            }
+        }
+        
+        // 7. Weight checks
+        let weightErrors = 0;
+        studies.forEach((s, i) => {
+            if (s.pubWeight !== null) {
+                const calcW = best.weights[i];
+                const diff = Math.abs(s.pubWeight - calcW);
+                if (diff > 5) weightErrors++;
+            }
+        });
+        
+        if (weightErrors > 0) {
+            findings.push({
+                type: 'critical', category: 'Study Weights',
+                message: `${weightErrors} study weight(s) differ by >5%`,
+                details: `Check variance calculations and weighting method`
+            });
+        } else if (studies.some(s => s.pubWeight !== null)) {
+            findings.push({
+                type: 'ok', category: 'Study Weights',
+                message: `Study weights verified`,
+                details: null
+            });
+        }
+        
+        // 8. LOO check for undisclosed exclusion
+        if (looMatchStudy) {
+            findings.push({
+                type: 'critical', category: 'Undisclosed Study Exclusion',
+                message: `Published results match LOO excluding "${looMatchStudy}"`,
+                details: `This suggests the study may have been excluded without disclosure`
+            });
+        }
+        
+        // 9. Estimator match
+        if (published.estimator !== 'unknown') {
+            const declaredResult = results[published.estimator] || resultsHKSJ[published.estimator + '_HKSJ'];
+            if (declaredResult && !isNaN(pubEffectLog)) {
+                const diff = Math.abs(declaredResult.effect - pubEffectLog);
+                if (diff > effectThreshCrit) {
+                    findings.push({
+                        type: 'warning', category: 'Declared Estimator Mismatch',
+                        message: `Results don't match declared ${published.estimator} estimator`,
+                        details: `Best match is ${bestMatch} instead`
+                    });
+                }
+            }
+        }
+        
+        // 10. PI check
+        if (!isNaN(pubPILowerLog) && !isNaN(pubPIUpperLog)) {
+            const piDiff = Math.max(
+                Math.abs(pi.piLower - pubPILowerLog),
+                Math.abs(pi.piUpper - pubPIUpperLog)
+            );
+            if (piDiff > 0.2) {
+                findings.push({
+                    type: 'warning', category: 'Prediction Interval',
+                    message: `Prediction interval differs from published`,
+                    details: `Check if same τ² and degrees of freedom were used`
+                });
+            }
+        }
+        
+        return findings;
+    }
+
+    // ============================================
+    // DISPLAY FUNCTIONS
+    // ============================================
+    
+    function displayResults() {
+        const { studies, published, results, resultsHKSJ, bestMatch,
+                pi, tau2Conf, egger, loo, findings, isRatio } = auditResults;
+        
+        const best = { ...results, ...resultsHKSJ }[bestMatch];
+        
+        // Summary counts
+        const criticals = findings.filter(f => f.type === 'critical').length;
+        const warnings = findings.filter(f => f.type === 'warning').length;
+        const oks = findings.filter(f => f.type === 'ok').length;
+        
+        document.getElementById('criticalCount').textContent = criticals;
+        document.getElementById('warningCount').textContent = warnings;
+        document.getElementById('matchCount').textContent = oks;
+        document.getElementById('bestEstimator').textContent = bestMatch;
+        
+        // Estimator comparison table
+        displayEstimatorTable();
+        
+        // Stats displays
+        displayStats('pubStatsDisplay', published, isRatio, 'published');
+        displayStats('calcStatsDisplay', best, isRatio, 'calculated');
+        
+        // Forest plots
+        renderForestPlot('forestPublished', studies, published, isRatio, 'pub');
+        renderForestPlot('forestRecalculated', studies, best, isRatio, 'calc');
+        
+        // Weight table
+        displayWeightTable();
+        
+        // LOO table
+        displayLOOTable();
+        
+        // Funnel plot
+        renderFunnelPlot();
+        
+        // Egger's test
+        if (egger) {
+            document.getElementById('eggerIntercept').textContent = egger.intercept.toFixed(3);
+            document.getElementById('eggerSE').textContent = egger.seIntercept.toFixed(3);
+            document.getElementById('eggerT').textContent = egger.t.toFixed(3);
+            document.getElementById('eggerP').textContent = egger.pValue.toFixed(4);
+            document.getElementById('eggerInterpret').textContent = 
+                egger.pValue < 0.05 ? 'Significant asymmetry (p<0.05)' : 'No significant asymmetry';
+            document.getElementById('eggerInterpret').className = 
+                'stat-value ' + (egger.pValue < 0.05 ? 'minor-diff' : 'match');
+        }
+        
+        // Prediction interval
+        const pubPI = `[${isRatio && !isNaN(published.piLower) ? Math.exp(published.piLower).toFixed(2) : (published.piLower?.toFixed(2) || '—')}, ${isRatio && !isNaN(published.piUpper) ? Math.exp(published.piUpper).toFixed(2) : (published.piUpper?.toFixed(2) || '—')}]`;
+        const calcPI = `[${isRatio ? Math.exp(pi.piLower).toFixed(2) : pi.piLower.toFixed(2)}, ${isRatio ? Math.exp(pi.piUpper).toFixed(2) : pi.piUpper.toFixed(2)}]`;
+        
+        document.getElementById('pubPIDisplay').textContent = pubPI;
+        document.getElementById('calcPIDisplay').textContent = calcPI;
+        document.getElementById('piStatus').textContent = '—';
+        
+        // Tau² CI
+        document.getElementById('tau2Point').textContent = results.DL.tau2.toFixed(4);
+        document.getElementById('tau2CI').textContent = `[${tau2Conf.lower.toFixed(4)}, ${tau2Conf.upper.toFixed(4)}]`;
+        
+        if (!isNaN(published.tau2)) {
+            const inCI = published.tau2 >= tau2Conf.lower && published.tau2 <= tau2Conf.upper;
+            document.getElementById('tau2Status').textContent = inCI ? '✓ Yes' : '✗ No';
+            document.getElementById('tau2Status').className = 'stat-value ' + (inCI ? 'match' : 'major-diff');
+        }
+        
+        // Findings
+        displayFindings();
+        
+        // Verdict
+        const verdictBadge = document.getElementById('verdictBadge');
+        if (criticals > 0) {
+            verdictBadge.textContent = 'DISCREPANCIES FOUND';
+            verdictBadge.className = 'verdict-badge verdict-fail';
+        } else if (warnings > 0) {
+            verdictBadge.textContent = 'MINOR ISSUES';
+            verdictBadge.className = 'verdict-badge verdict-warning';
+        } else {
+            verdictBadge.textContent = 'VERIFIED';
+            verdictBadge.className = 'verdict-badge verdict-pass';
+        }
+        
+        document.getElementById('auditTimestamp').textContent = new Date().toLocaleString();
+    }
+    
+    function displayEstimatorTable() {
+        const { published, results, resultsHKSJ, isRatio } = auditResults;
+        const tbody = document.getElementById('estimatorTableBody');
+        tbody.innerHTML = '';
+        
+        const pubEffect = isRatio && !isNaN(published.effect) ? published.effect : published.effect;
+        
+        const rows = [
+            { label: 'Effect', key: 'effect', transform: v => isRatio ? Math.exp(v).toFixed(3) : v.toFixed(3), pubVal: published.effect },
+            { label: '95% CI Lower', key: 'ciLower', transform: v => isRatio ? Math.exp(v).toFixed(3) : v.toFixed(3), pubVal: published.ciLower },
+            { label: '95% CI Upper', key: 'ciUpper', transform: v => isRatio ? Math.exp(v).toFixed(3) : v.toFixed(3), pubVal: published.ciUpper },
+            { label: 'τ²', key: 'tau2', transform: v => v.toFixed(4), pubVal: published.tau2 },
+            { label: 'I²', key: 'I2', transform: v => v.toFixed(1) + '%', pubVal: published.i2 },
+            { label: 'SE', key: 'se', transform: v => v.toFixed(4), pubVal: null }
+        ];
+        
+        for (const row of rows) {
+            const tr = document.createElement('tr');
+            
+            // Find best match for this row
+            let bestDiff = Infinity;
+            let bestCol = null;
+            
+            const vals = {};
+            for (const [name, res] of Object.entries(results)) {
+                if (!res) continue;
+                vals[name] = res[row.key];
+                if (row.pubVal !== null && !isNaN(row.pubVal)) {
+                    const pubCompare = row.key === 'effect' ? (isRatio ? Math.log(row.pubVal) : row.pubVal) :
+                                       (row.key === 'ciLower' || row.key === 'ciUpper') && isRatio ? Math.log(row.pubVal) : row.pubVal;
+                    const diff = Math.abs(res[row.key] - pubCompare);
+                    if (diff < bestDiff) {
+                        bestDiff = diff;
+                        bestCol = name;
+                    }
+                }
+            }
+            
+            let pubDisplay = '—';
+            if (row.pubVal !== null && !isNaN(row.pubVal)) {
+                pubDisplay = row.key === 'I2' ? row.pubVal.toFixed(1) + '%' : row.pubVal.toFixed(row.key === 'tau2' ? 4 : 3);
+            }
+            
+            tr.innerHTML = `
+                <td>${row.label}</td>
+                <td class="mono">${pubDisplay}</td>
+                <td class="mono ${bestCol === 'DL' ? 'best-match' : ''}">${results.DL ? row.transform(results.DL[row.key]) : '—'}</td>
+                <td class="mono ${bestCol === 'REML' ? 'best-match' : ''}">${results.REML ? row.transform(results.REML[row.key]) : '—'}</td>
+                <td class="mono ${bestCol === 'PM' ? 'best-match' : ''}">${results.PM ? row.transform(results.PM[row.key]) : '—'}</td>
+                <td class="mono ${bestCol === 'EB' ? 'best-match' : ''}">${results.EB ? row.transform(results.EB[row.key]) : '—'}</td>
+                <td class="mono ${bestCol === 'FE' ? 'best-match' : ''}">${results.FE ? row.transform(results.FE[row.key]) : '—'}</td>
+            `;
+            
+            tbody.appendChild(tr);
+        }
+    }
+    
+    function displayStats(containerId, data, isRatio, type) {
+        const container = document.getElementById(containerId);
+        
+        let effect, ciLower, ciUpper;
+        if (type === 'published') {
+            effect = data.effect;
+            ciLower = data.ciLower;
+            ciUpper = data.ciUpper;
+        } else {
+            effect = isRatio ? Math.exp(data.effect) : data.effect;
+            ciLower = isRatio ? Math.exp(data.ciLower) : data.ciLower;
+            ciUpper = isRatio ? Math.exp(data.ciUpper) : data.ciUpper;
+        }
+        
+        container.innerHTML = `
+            <div class="stat-row">
+                <span class="stat-label">Pooled Effect</span>
+                <span class="stat-value mono">${!isNaN(effect) ? effect.toFixed(3) : '—'}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">95% CI</span>
+                <span class="stat-value mono">[${!isNaN(ciLower) ? ciLower.toFixed(2) : '—'}, ${!isNaN(ciUpper) ? ciUpper.toFixed(2) : '—'}]</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">I²</span>
+                <span class="stat-value mono">${!isNaN(data.i2 ?? data.I2) ? (data.i2 ?? data.I2).toFixed(1) : '—'}%</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">τ²</span>
+                <span class="stat-value mono">${!isNaN(data.tau2) ? data.tau2.toFixed(4) : '—'}</span>
+            </div>
+        `;
+    }
+    
+    function displayWeightTable() {
+        const { studies, results } = auditResults;
+        const tbody = document.getElementById('weightTableBody');
+        tbody.innerHTML = '';
+        
+        studies.forEach((s, i) => {
+            const dlW = results.DL.weights[i];
+            const remlW = results.REML.weights[i];
+            const feW = results.FE.weights[i];
+            
+            let bestMatch = 'DL';
+            let minDiff = Infinity;
+            
+            if (s.pubWeight !== null) {
+                [['DL', dlW], ['REML', remlW], ['FE', feW]].forEach(([name, w]) => {
+                    const diff = Math.abs(w - s.pubWeight);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestMatch = name;
+                    }
+                });
+            }
+            
+            const status = s.pubWeight === null ? '—' :
+                          minDiff < 2 ? '✓ OK' :
+                          minDiff < 5 ? '⚠ Warning' : '✗ Error';
+            const statusClass = s.pubWeight === null ? '' :
+                               minDiff < 2 ? 'match' :
+                               minDiff < 5 ? 'minor-diff' : 'major-diff';
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${s.study}</td>
+                <td class="mono">${s.pubWeight !== null ? s.pubWeight.toFixed(1) + '%' : '—'}</td>
+                <td class="mono">${dlW.toFixed(1)}%</td>
+                <td class="mono">${remlW.toFixed(1)}%</td>
+                <td class="mono">${feW.toFixed(1)}%</td>
+                <td class="mono">${s.pubWeight !== null ? bestMatch : '—'}</td>
+                <td class="${statusClass}">${status}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    
+    function displayLOOTable() {
+        const { loo, published, isRatio } = auditResults;
+        const tbody = document.getElementById('looTableBody');
+        tbody.innerHTML = '';
+        
+        const pubEffectLog = isRatio && !isNaN(published.effect) ? Math.log(published.effect) : published.effect;
+        
+        let matchFound = null;
+        
+        loo.forEach(l => {
+            const effect = isRatio ? Math.exp(l.effect) : l.effect;
+            const ciL = isRatio ? Math.exp(l.ciLower) : l.ciLower;
+            const ciU = isRatio ? Math.exp(l.ciUpper) : l.ciUpper;
+            
+            const matches = !isNaN(pubEffectLog) && Math.abs(l.effect - pubEffectLog) < 0.01;
+            if (matches) matchFound = l.excluded;
+            
+            const tr = document.createElement('tr');
+            tr.className = matches ? 'loo-highlight' : '';
+            tr.innerHTML = `
+                <td>${l.excluded}</td>
+                <td class="mono">${effect.toFixed(3)}</td>
+                <td class="mono">[${ciL.toFixed(2)}, ${ciU.toFixed(2)}]</td>
+                <td class="mono">${l.I2.toFixed(1)}%</td>
+                <td class="${matches ? 'major-diff' : ''}">${matches ? '⚠ YES' : 'No'}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+        
+        document.getElementById('looNote').textContent = matchFound
+            ? `⚠ ALERT: Published results match analysis excluding "${matchFound}". This may indicate undisclosed study exclusion.`
+            : 'No single study exclusion reproduces the published results.';
+    }
+    
+    function displayFindings() {
+        const { findings } = auditResults;
+        const list = document.getElementById('findingsList');
+        list.innerHTML = '';
+        
+        const icons = { critical: '✗', warning: '⚠', ok: '✓', info: 'ℹ' };
+        
+        findings.forEach(f => {
+            const li = document.createElement('li');
+            li.className = 'finding-item';
+            li.innerHTML = `
+                <div class="finding-icon ${f.type}">${icons[f.type]}</div>
+                <div class="finding-content">
+                    <h5>${f.category}</h5>
+                    <p>${f.message}</p>
+                    ${f.details ? `<p><code>${f.details}</code></p>` : ''}
+                </div>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    // ============================================
+    // VISUALIZATION
+    // ============================================
+    
+    function renderForestPlot(svgId, studies, summary, isRatio, type) {
+        const svg = document.getElementById(svgId);
+        const width = 480;
+        const rowHeight = 24;
+        const topMargin = 35;
+        const bottomMargin = 50;
+        const leftMargin = 120;
+        const rightMargin = 70;
+        const plotWidth = width - leftMargin - rightMargin;
+        const height = topMargin + (studies.length + 1) * rowHeight + bottomMargin;
+        
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        svg.innerHTML = '';
+        
+        // Get summary values
+        let summaryEffect, summaryCILower, summaryCIUpper;
+        if (type === 'pub') {
+            summaryEffect = summary.effect;
+            summaryCILower = summary.ciLower;
+            summaryCIUpper = summary.ciUpper;
+        } else {
+            summaryEffect = isRatio ? Math.exp(summary.effect) : summary.effect;
+            summaryCILower = isRatio ? Math.exp(summary.ciLower) : summary.ciLower;
+            summaryCIUpper = isRatio ? Math.exp(summary.ciUpper) : summary.ciUpper;
+        }
+        
+        // Calculate range
+        const studyEffects = studies.map(s => isRatio ? Math.exp(s.effect) : s.effect);
+        const studyLower = studies.map(s => isRatio ? Math.exp(s.effect - 1.96 * s.se) : s.effect - 1.96 * s.se);
+        const studyUpper = studies.map(s => isRatio ? Math.exp(s.effect + 1.96 * s.se) : s.effect + 1.96 * s.se);
+        
+        const allVals = [...studyEffects, ...studyLower, ...studyUpper];
+        if (!isNaN(summaryEffect)) allVals.push(summaryEffect, summaryCILower, summaryCIUpper);
+        
+        const validVals = allVals.filter(v => !isNaN(v) && isFinite(v));
+        const minVal = Math.min(...validVals);
+        const maxVal = Math.max(...validVals);
+        const range = maxVal - minVal;
+        const xMin = minVal - range * 0.1;
+        const xMax = maxVal + range * 0.1;
+        
+        const xScale = v => leftMargin + ((v - xMin) / (xMax - xMin)) * plotWidth;
+        const nullLine = isRatio ? 1 : 0;
+        
+        const color = type === 'pub' ? '#a78bfa' : '#22d3ee';
+        
+        // Background
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        bg.setAttribute('width', width);
+        bg.setAttribute('height', height);
+        bg.setAttribute('fill', '#111820');
+        svg.appendChild(bg);
+        
+        // Null line
+        const nullX = xScale(nullLine);
+        const nl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        nl.setAttribute('x1', nullX); nl.setAttribute('x2', nullX);
+        nl.setAttribute('y1', topMargin - 5); nl.setAttribute('y2', height - bottomMargin + 15);
+        nl.setAttribute('stroke', '#5c6b7f');
+        nl.setAttribute('stroke-dasharray', '3,3');
+        svg.appendChild(nl);
+        
+        // Studies
+        studies.forEach((s, i) => {
+            const y = topMargin + i * rowHeight + rowHeight / 2;
+            const effect = isRatio ? Math.exp(s.effect) : s.effect;
+            const lower = isRatio ? Math.exp(s.effect - 1.96 * s.se) : s.effect - 1.96 * s.se;
+            const upper = isRatio ? Math.exp(s.effect + 1.96 * s.se) : s.effect + 1.96 * s.se;
+            
+            // Label
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', leftMargin - 8);
+            label.setAttribute('y', y + 3);
+            label.setAttribute('text-anchor', 'end');
+            label.setAttribute('fill', '#8b9bb4');
+            label.setAttribute('font-size', '10');
+            label.setAttribute('font-family', 'JetBrains Mono, monospace');
+            label.textContent = s.study.length > 14 ? s.study.substring(0, 12) + '..' : s.study;
+            svg.appendChild(label);
+            
+            // CI line
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', xScale(Math.max(lower, xMin)));
+            line.setAttribute('x2', xScale(Math.min(upper, xMax)));
+            line.setAttribute('y1', y); line.setAttribute('y2', y);
+            line.setAttribute('stroke', color);
+            line.setAttribute('stroke-width', '1.5');
+            svg.appendChild(line);
+            
+            // Point (square)
+            const weight = summary.weights ? summary.weights[i] : 10;
+            const size = 3 + Math.sqrt(weight) * 1.2;
+            const sq = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            sq.setAttribute('x', xScale(effect) - size / 2);
+            sq.setAttribute('y', y - size / 2);
+            sq.setAttribute('width', size);
+            sq.setAttribute('height', size);
+            sq.setAttribute('fill', color);
+            svg.appendChild(sq);
+        });
+        
+        // Summary diamond
+        if (!isNaN(summaryEffect)) {
+            const y = topMargin + studies.length * rowHeight + rowHeight / 2;
+            
+            // Separator
+            const sep = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            sep.setAttribute('x1', 5); sep.setAttribute('x2', width - 5);
+            sep.setAttribute('y1', y - rowHeight / 2 + 2); sep.setAttribute('y2', y - rowHeight / 2 + 2);
+            sep.setAttribute('stroke', '#2a3544');
+            svg.appendChild(sep);
+            
+            // Label
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', leftMargin - 8);
+            label.setAttribute('y', y + 3);
+            label.setAttribute('text-anchor', 'end');
+            label.setAttribute('fill', color);
+            label.setAttribute('font-size', '10');
+            label.setAttribute('font-weight', '600');
+            label.setAttribute('font-family', 'JetBrains Mono, monospace');
+            label.textContent = 'Pooled';
+            svg.appendChild(label);
+            
+            // Diamond
+            const h = 10;
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `M ${xScale(summaryCILower)} ${y} L ${xScale(summaryEffect)} ${y - h/2} L ${xScale(summaryCIUpper)} ${y} L ${xScale(summaryEffect)} ${y + h/2} Z`);
+            path.setAttribute('fill', color);
+            path.setAttribute('opacity', '0.8');
+            svg.appendChild(path);
+        }
+        
+        // X-axis
+        const axisY = height - bottomMargin + 20;
+        const axis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        axis.setAttribute('x1', leftMargin); axis.setAttribute('x2', leftMargin + plotWidth);
+        axis.setAttribute('y1', axisY); axis.setAttribute('y2', axisY);
+        axis.setAttribute('stroke', '#5c6b7f');
+        svg.appendChild(axis);
+        
+        // Ticks
+        for (let i = 0; i <= 4; i++) {
+            const val = xMin + (i / 4) * (xMax - xMin);
+            const x = xScale(val);
+            
+            const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            tick.setAttribute('x1', x); tick.setAttribute('x2', x);
+            tick.setAttribute('y1', axisY); tick.setAttribute('y2', axisY + 4);
+            tick.setAttribute('stroke', '#5c6b7f');
+            svg.appendChild(tick);
+            
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', x);
+            label.setAttribute('y', axisY + 14);
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('fill', '#5c6b7f');
+            label.setAttribute('font-size', '9');
+            label.setAttribute('font-family', 'JetBrains Mono, monospace');
+            label.textContent = val.toFixed(2);
+            svg.appendChild(label);
+        }
+    }
+    
+    function renderFunnelPlot() {
+        const { studies, results, isRatio } = auditResults;
+        const svg = document.getElementById('funnelPlot');
+        const width = 400;
+        const height = 300;
+        const margin = { top: 30, right: 30, bottom: 50, left: 60 };
+        const plotWidth = width - margin.left - margin.right;
+        const plotHeight = height - margin.top - margin.bottom;
+        
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        svg.innerHTML = '';
+        
+        const pooled = results.DL.effect;
+        const effects = studies.map(s => s.effect);
+        const ses = studies.map(s => s.se);
+        
+        const minEffect = Math.min(...effects, pooled) - 0.3;
+        const maxEffect = Math.max(...effects, pooled) + 0.3;
+        const maxSE = Math.max(...ses) * 1.1;
+        
+        const xScale = e => margin.left + ((e - minEffect) / (maxEffect - minEffect)) * plotWidth;
+        const yScale = se => margin.top + (se / maxSE) * plotHeight;
+        
+        // Background
+        const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        bg.setAttribute('width', width);
+        bg.setAttribute('height', height);
+        bg.setAttribute('fill', '#111820');
+        svg.appendChild(bg);
+        
+        // Funnel
+        const funnelPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const apex = { x: xScale(pooled), y: margin.top };
+        const leftBottom = { x: xScale(pooled - 1.96 * maxSE), y: margin.top + plotHeight };
+        const rightBottom = { x: xScale(pooled + 1.96 * maxSE), y: margin.top + plotHeight };
+        funnelPath.setAttribute('d', `M ${apex.x} ${apex.y} L ${leftBottom.x} ${leftBottom.y} L ${rightBottom.x} ${rightBottom.y} Z`);
+        funnelPath.setAttribute('fill', 'rgba(61, 142, 247, 0.1)');
+        funnelPath.setAttribute('stroke', 'rgba(61, 142, 247, 0.3)');
+        svg.appendChild(funnelPath);
+        
+        // Vertical line at pooled
+        const vline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        vline.setAttribute('x1', xScale(pooled)); vline.setAttribute('x2', xScale(pooled));
+        vline.setAttribute('y1', margin.top); vline.setAttribute('y2', margin.top + plotHeight);
+        vline.setAttribute('stroke', '#3d8ef7');
+        vline.setAttribute('stroke-dasharray', '4,4');
+        svg.appendChild(vline);
+        
+        // Points
+        studies.forEach((s, i) => {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', xScale(s.effect));
+            circle.setAttribute('cy', yScale(s.se));
+            circle.setAttribute('r', 4);
+            circle.setAttribute('fill', '#22d3ee');
+            svg.appendChild(circle);
+        });
+        
+        // Axes
+        const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        xAxis.setAttribute('x1', margin.left); xAxis.setAttribute('x2', width - margin.right);
+        xAxis.setAttribute('y1', margin.top + plotHeight); xAxis.setAttribute('y2', margin.top + plotHeight);
+        xAxis.setAttribute('stroke', '#5c6b7f');
+        svg.appendChild(xAxis);
+        
+        const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        yAxis.setAttribute('x1', margin.left); yAxis.setAttribute('x2', margin.left);
+        yAxis.setAttribute('y1', margin.top); yAxis.setAttribute('y2', margin.top + plotHeight);
+        yAxis.setAttribute('stroke', '#5c6b7f');
+        svg.appendChild(yAxis);
+        
+        // Labels
+        const xLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        xLabel.setAttribute('x', margin.left + plotWidth / 2);
+        xLabel.setAttribute('y', height - 10);
+        xLabel.setAttribute('text-anchor', 'middle');
+        xLabel.setAttribute('fill', '#8b9bb4');
+        xLabel.setAttribute('font-size', '11');
+        xLabel.textContent = isRatio ? 'log(Effect)' : 'Effect';
+        svg.appendChild(xLabel);
+        
+        const yLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        yLabel.setAttribute('x', 15);
+        yLabel.setAttribute('y', margin.top + plotHeight / 2);
+        yLabel.setAttribute('text-anchor', 'middle');
+        yLabel.setAttribute('fill', '#8b9bb4');
+        yLabel.setAttribute('font-size', '11');
+        yLabel.setAttribute('transform', `rotate(-90, 15, ${margin.top + plotHeight / 2})`);
+        yLabel.textContent = 'Standard Error';
+        svg.appendChild(yLabel);
+    }
+
+    // ============================================
+    // EXPORT
+    // ============================================
+    
+    function exportReport(format) {
+        if (!auditResults) {
+            alert('Run audit first.');
+            return;
+        }
+        
+        if (format === 'json') {
+            downloadFile(JSON.stringify(auditResults, null, 2), 'audit-report.json', 'application/json');
+        } else if (format === 'csv') {
+            let csv = 'Category,Type,Message,Details\n';
+            auditResults.findings.forEach(f => {
+                csv += `"${f.category}","${f.type}","${f.message}","${f.details || ''}"\n`;
+            });
+            downloadFile(csv, 'audit-findings.csv', 'text/csv');
+        } else if (format === 'html') {
+            downloadFile(generateHTMLReport(), 'audit-report.html', 'text/html');
+        }
+    }
+    
+    function generateHTMLReport() {
+        const { findings, published, results, bestMatch, isRatio, timestamp } = auditResults;
+        const best = { ...results, ...auditResults.resultsHKSJ }[bestMatch];
+        const criticals = findings.filter(f => f.type === 'critical').length;
+        const warnings = findings.filter(f => f.type === 'warning').length;
+        
+        const verdict = criticals > 0 ? 'DISCREPANCIES FOUND' : warnings > 0 ? 'MINOR ISSUES' : 'VERIFIED';
+        const vColor = criticals > 0 ? '#ef4444' : warnings > 0 ? '#f59e0b' : '#10b981';
+        
+        return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Meta-Analysis Audit Report</title>
+<style>
+body{font-family:Georgia,serif;max-width:900px;margin:40px auto;padding:20px;color:#333;line-height:1.6}
+h1{border-bottom:2px solid #333;padding-bottom:10px}
+.verdict{display:inline-block;padding:8px 16px;border-radius:6px;font-weight:bold;color:white;background:${vColor}}
+table{width:100%;border-collapse:collapse;margin:20px 0}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}
+th{background:#f5f5f5}
+.critical{color:#ef4444}.warning{color:#f59e0b}.ok{color:#10b981}
+.mono{font-family:monospace}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+.box{background:#f9f9f9;padding:20px;border-radius:8px}
+.box h3{margin-top:0;color:#666;font-size:14px;text-transform:uppercase}
+</style></head><body>
+<h1>Meta-Analysis Audit Report</h1>
+<p><strong>Generated:</strong> ${new Date(timestamp).toLocaleString()}</p>
+<p><strong>Best Matching Estimator:</strong> ${bestMatch}</p>
+<p><strong>Verdict:</strong> <span class="verdict">${verdict}</span></p>
+
+<h2>Summary Comparison</h2>
+<div class="grid">
+<div class="box"><h3>Published</h3>
+<p><strong>Effect:</strong> <span class="mono">${!isNaN(published.effect)?published.effect.toFixed(3):'—'}</span></p>
+<p><strong>95% CI:</strong> <span class="mono">[${!isNaN(published.ciLower)?published.ciLower.toFixed(2):'—'}, ${!isNaN(published.ciUpper)?published.ciUpper.toFixed(2):'—'}]</span></p>
+<p><strong>I²:</strong> <span class="mono">${!isNaN(published.i2)?published.i2.toFixed(1)+'%':'—'}</span></p>
+<p><strong>τ²:</strong> <span class="mono">${!isNaN(published.tau2)?published.tau2.toFixed(4):'—'}</span></p>
+</div>
+<div class="box"><h3>Recalculated (${bestMatch})</h3>
+<p><strong>Effect:</strong> <span class="mono">${(isRatio?Math.exp(best.effect):best.effect).toFixed(3)}</span></p>
+<p><strong>95% CI:</strong> <span class="mono">[${(isRatio?Math.exp(best.ciLower):best.ciLower).toFixed(2)}, ${(isRatio?Math.exp(best.ciUpper):best.ciUpper).toFixed(2)}]</span></p>
+<p><strong>I²:</strong> <span class="mono">${best.I2.toFixed(1)}%</span></p>
+<p><strong>τ²:</strong> <span class="mono">${best.tau2.toFixed(4)}</span></p>
+</div>
+</div>
+
+<h2>Findings</h2>
+<table><thead><tr><th>Category</th><th>Status</th><th>Details</th></tr></thead><tbody>
+${findings.map(f=>`<tr><td>${f.category}</td><td class="${f.type}">${f.type.toUpperCase()}</td><td>${f.message}${f.details?`<br><small class="mono">${f.details}</small>`:''}</td></tr>`).join('')}
+</tbody></table>
+
+<hr><p style="color:#666;font-size:12px;">Generated by Meta-Analysis Audit Tool v2.0</p>
+</body></html>`;
+    }
+    
+    function downloadFile(content, filename, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    </script>
+</body>
+</html>
